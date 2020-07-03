@@ -27,7 +27,7 @@ An analysis in cytograph is called a "build" and is driven by configurations (se
 
 1. Prepare your input samples using [velocyto](http://velocyto.org) and place them in a folder. Below, the full path to this folder will be called `{samples}`. Each sample file should be named `{SampleID}.loom`. For example, `lung23.loom` is a sample with `SampleID` equal to `lung23`.
 
-2. Prepare auto-annotations in a folder (we'll call its full path `{auto-annotations}`). For example, you can start with `Human` or `Mouse` from the [auto-annotation](https://github.com/linnarsson-lab/auto-annotation) repository.
+2. Prepare auto-annotations in a folder (we'll call its full path `{auto-annotations}`). For example, you can start with `Human` or `Mouse` from the [auto-annotation-md](https://github.com/linnarsson-lab/auto-annotation-md) repository.
 
 3. Optionally create a metadata file (we'll call its full path `{metadata}`). The file should be semicolon-delimited with one header row, and one column heading should be `SampleID`. For each sample included in the build, the SampleID is matched against this column, and the corresponding row of metadata is added to the sample. For example, if the SampleID is `lung23`, then the metadata row where the `SampleID` column has value `lung23` is used. For each column, an attribute is added to the file with name equal to the column heading, and value equal to the value in the corresponding row. 
 
@@ -51,10 +51,9 @@ paths:
 
 ### Setting up the build folder
 
-1. Create a build folder (full path `{build}`), and in this folder create a subfolder `punchcards`. 
+1. Create a build folder (full path `{build}`), and in this folder create a subfolder `punchcards`. Check out the [punchcards](https://github.com/linnarsson-lab/punchcards) repository for examples of punchcards.
 
-2. Optionally create a file in the build folder called `config.yaml`, with content similar to the global config file (`~/.cytograph`). Any setting given in the build-specific config file will override the corresponding
-    setting in the global config. For example, to use a different auto-annotation for a build, `config.yaml` would be give like so:
+2. Optionally create a file in the build folder called `config.yaml`, with content similar to the global config file (`~/.cytograph`). Any setting given in the build-specific config file will override the corresponding setting in the global config. For example, to use a different auto-annotation for a build, `config.yaml` would be give like so:
 
 ```
 paths:
@@ -65,10 +64,10 @@ paths:
 
 ```
 MySamples:
-    include: [[10X121_1, 10X122_2]]
+    include: [10X121_1, 10X122_2]
 ```
 
-Here, `MySamples` is the name that you give to a collection of samples, called a *Punchcard subset*. The samples are listes in double brackets using their SampleIDs. Cytograph will collect the samples by reading from `{samples}/10X121_1.loom` and `{samples}/10X122_2.loom`
+Here, `MySamples` is the name that you give to a collection of samples, called a *Punchcard subset*. The samples are listes in brackets using their SampleIDs. Cytograph will collect the samples by reading from `{samples}/10X121_1.loom` and `{samples}/10X122_2.loom`
 and will create an output file called `MySamples.loom`. Note that you can define multiple subsets, which you can then analyze separately.
 
 Your build folder should look now like this:
@@ -88,7 +87,7 @@ $ cytograph --build-location {build} process MySamples
 ```
 
 This tells cytograph to process the Punchcard subset `MySamples`, which we defined in `Root.yaml`. Cytograph will run through a standard set of algorithms (pooling the samples, removing doublets,
-Poisson pooling, matrix factorization, manifold learning, clustering, embedding and velocity inference). Several outputs will be produced, resulting in the following build folder:
+Poisson pooling, matrix factorization, manifold learning, clustering, and embedding). Several outputs will be produced, resulting in the following build folder:
 
 ```
 /data
@@ -166,8 +165,6 @@ cytograph build --engine local
 Cytograph computes an execution graph based on the punchcard dependencies, sorts it so that dependencies come before the
 subsets that depends on them, and then runs `cytograph process` on them sequentially.
 
-As a bonus, cytograph also runs `cytograph pool` on the result, which pools all the leaf subsets into a merged file `Pool.loom` and corresponding `Pool.agg.loom` and `exported/Pool`. Pooling does not involve re-clustering, but does
-include embeddings (e.g. tSNE), matrix factorization etc. and all the standard plots.
 
 #### Running a complete build on a compute cluster
 
